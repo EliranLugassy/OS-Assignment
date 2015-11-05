@@ -38,5 +38,7 @@ public class Server extends Thread{
 		
 		
 		
-	}
-}
+	}//end poolManager class
+	
+	
+}//EOF server
