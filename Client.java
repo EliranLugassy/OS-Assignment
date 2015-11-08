@@ -1,8 +1,10 @@
+import java.io.BufferedReader;
 import java.io.DataInputStream;	
 import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.Socket;
@@ -51,8 +53,11 @@ public class Client extends Thread{
 			while(true){
 
 				//rand X+Px - need to find the algo.
+
 				int x = randomX(); //if x get 0 value -> the read from file failed
+
 				System.out.println("Client "+this.getName()+": sending x");
+
 				_send_to_server.writeInt(x);// wait for responding of the server
 				//when get the response we need to print "Client : got reply y for query  x"
 
@@ -71,52 +76,54 @@ public class Client extends Thread{
 		}
 	}
 
-	// [      ]
-	private int randomX() {
 
+	/**
+	 * this function Represents a Retrieval of number in range by Probabilistic method.
+	 * we build an array with length = 1000 to Store the number That way possible to take a random
+	 * number with Equal probability among all elements of an array.
+	 * @return x who Selected by Probabilistic method or 0 if the read from file is failed.
+	 */
+	private int randomX() {
 
 		try {
 
-			FileInputStream fis = new FileInputStream(_fileName);
-			ObjectInputStream ois = new ObjectInputStream(fis);
+			FileReader fr = new FileReader(_fileName);
+			BufferedReader br = new BufferedReader(fr);
 			int [] probArr = new int[1000];
 			double prob = 0;
 			int rowInFile=1;
 			int indexOnProbArr=0;
 
 			while(rowInFile<=_R){ // 1 to R (include)
-				prob = ois.readDouble(); // 0.2 // i=1 
+
+				prob = Double.parseDouble(br.readLine());
+
+				if(prob == -1){
+					break;
+				}
 				prob *= 1000; // to get performance number
-				while(indexOnProbArr<prob){
-					probArr[indexOnProbArr++] = rowInFile;
+				int k=0;
+				while(k<prob){
+					probArr[indexOnProbArr] = rowInFile;
+					indexOnProbArr++;
+					k++;
 				}
 				rowInFile++;
 			}
-			ois.close();
-			fis.close();
+
+			br.close();
+			fr.close();
 
 			Random xQuery = new Random();
 			int chooseX = xQuery.nextInt(1000);
 			return probArr[chooseX];
-			
-			
+
+
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		
-
 		return 0;
 	}
-
-
-
-public static void main(String[] args) {
-	
-}
-
 }

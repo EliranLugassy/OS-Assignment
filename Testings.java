@@ -21,8 +21,6 @@ public class Testings {
 
 		try {
 
-			//			FileInputStream fis = new FileInputStream(_fileName);
-			//ObjectInputStream ois = new ObjectInputStream(fis);
 			FileReader fr = new FileReader(_fileName);
 			BufferedReader br = new BufferedReader(fr);
 			int [] probArr = new int[1000];
@@ -35,7 +33,6 @@ public class Testings {
 				
 				prob = Double.parseDouble(br.readLine());
 				
-				//				prob = fis.; // 0.2 // i=1 // -1 -> end
 				if(prob == -1){
 					break;
 				}
@@ -48,8 +45,7 @@ public class Testings {
 				}
 				rowInFile++;
 			}
-			//			ois.close();
-			//			fis.close();
+
 			br.close();
 			fr.close();
 
