@@ -15,12 +15,15 @@ import java.util.Random;
  * 
  * @author Evyatar Gerslte and Eliran Lugassy
  * this class represent the client side
- *
  */
 public class Client extends Thread{
 
-	//the main args of class
-	private int _R;
+	/**
+	 * the main args of class
+	 * _R - the top value of the range to choose a number According to a known probability 
+	 * _fileName - this is the file who contains the probabilities to the numbers 
+	 */
+	private int _R; 
 	private String _fileName;
 
 	//client side args
@@ -52,13 +55,11 @@ public class Client extends Thread{
 
 			while(true){
 
-				//rand X+Px - need to find the algo.
+				int queryX = getRandomX(); //if x get 0 value -> the read from file failed
 
-				int x = randomX(); //if x get 0 value -> the read from file failed
+				System.out.println("Client "+this.getName()+": sending"+queryX+".");
 
-				System.out.println("Client "+this.getName()+": sending x");
-
-				_send_to_server.writeInt(x);// wait for responding of the server
+				_send_to_server.writeInt(queryX);// wait for responding of the server
 				//when get the response we need to print "Client : got reply y for query  x"
 
 				try {
@@ -83,7 +84,7 @@ public class Client extends Thread{
 	 * number with Equal probability among all elements of an array.
 	 * @return x who Selected by Probabilistic method or 0 if the read from file is failed.
 	 */
-	private int randomX() {
+	private int getRandomX() {
 
 		try {
 
@@ -94,7 +95,7 @@ public class Client extends Thread{
 			int rowInFile=1;
 			int indexOnProbArr=0;
 
-			while(rowInFile<=_R){ // 1 to R (include)
+			while(rowInFile<=_R){ // 1 to R (include them)
 
 				prob = Double.parseDouble(br.readLine());
 
@@ -117,7 +118,6 @@ public class Client extends Thread{
 			Random xQuery = new Random();
 			int chooseX = xQuery.nextInt(1000);
 			return probArr[chooseX];
-
 
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
