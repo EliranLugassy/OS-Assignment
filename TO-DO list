@@ -1,0 +1,24 @@
+Client:
+    parameters: R, fileName
+        R = natural number, the query's would be from 1 to R.
+        fileName = file with the prob. of numbers 1-R
+        
+Server:
+    the server gets X query: if there is a free S-Thread (ready to work) it will get this X to search.
+                             else this X will entrance to the Queue
+    ThreadPoolManager - manage the S-Thread's, determine if there is one to search the current X
+    S-Thread - (if its free) its getting the X and do:
+                                              1) search at the cache if its in there. if it found this X it will send the answer to client.
+                                                 ** 
+                                              2) 
+
+
+Querys:
+    querys runs in a unlimited-loop, each time getting X by random prob. and sending X to the server through the socket.
+          before sending it prints: client<Name>:sending X 
+          and wait for the server response. when the server answer is come print it, and back to the loop...
+
+DB:
+    the DB save the querys by the form: X Y Z 
+                                 while; X-the query, Y-the server answer, Z-the counter of this specific X query (relevant to the Cache).
+    
