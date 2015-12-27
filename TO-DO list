@@ -28,5 +28,6 @@ DB:
     reading from the DB:
         there is a Thread-pool-manager of readers that can read from the DB. when thread T want to search for X it pass this X 
         to the thread pool, and this will search for it on the DB, and will give back an answer to T.
-        
+        		there are Y read threads, by the Y parameter (passed to the server when its created.
+
     
