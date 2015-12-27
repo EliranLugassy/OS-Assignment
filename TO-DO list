@@ -21,4 +21,12 @@ Querys:
 DB:
     the DB save the querys by the form: X Y Z 
                                  while; X-the query, Y-the server answer, Z-the counter of this specific X query (relevant to the Cache).
+        query of X that isn't stored in the DB will create some random number in range of [1,L] that will be represent the Y of this
+        query on the DB. 
+        the Z variable will be initialize by 1, and will count the number of searches of this X.
+
+    reading from the DB:
+        there is a Thread-pool-manager of readers that can read from the DB. when thread T want to search for X it pass this X 
+        to the thread pool, and this will search for it on the DB, and will give back an answer to T.
+        
     
