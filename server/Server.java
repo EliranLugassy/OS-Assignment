@@ -16,11 +16,11 @@ import com.sun.security.ntlm.Client;
 public class Server extends Thread{
 
 	//*****	server creating parameters ******//
-	private int _L, _C, _M, _L, _Y;
+	private int _S, _C, _M, _L, _Y;
 	
-	private SThread[] st;	// extnds Thread, need to search the given X
-	private Cache cc;	// the cache, extnds Thread, storing freq. querys 
-	private Readers[] r;	// the only Threads that can read from the DB
+	private SThread[] search;	// extnds Thread, need to search the given X, size: S
+	private Cache cache;	// the cache, extnds Thread, storing freq. querys 
+	private Readers[] reader;	// the only Threads that can read from the DB
 
 	
 	//***** other local variables *****//
@@ -34,10 +34,30 @@ public class Server extends Thread{
 	Semaphore _syncQustAns; // think again on this need
 
 	
-	//##	constructor		##//
+	//##	constructors		##//
+	/**
+	 * the main and classic ctor - getting all necessary args
+	 * 
+	 */
+	public Server(int S, int C, int M, int L, int Y){
+		
+		_S = S;
+		search = new SThread[_S];
+		
+		_C = C;
+		_M = M;
+		cache = new Cache(_C,_M);
+
+		_L = L; // the range to get random Y for each given X to search
+		
+		_Y = Y;
+		reader = new Readers[_Y];
+		
+	}
 	
 	
 	
+	//	ctor for tests only!	//
 	public Server(int _L, int _port, Semaphore m) {
 
 		this._L = _L;
