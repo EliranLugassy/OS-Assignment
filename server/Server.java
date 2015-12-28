@@ -15,7 +15,15 @@ import com.sun.security.ntlm.Client;
 
 public class Server extends Thread{
 
-	private int _L;
+	//*****	server creating parameters ******//
+	private int _L, _C, _M, _L, _Y;
+	
+	private SThread[] st;	// extnds Thread, need to search the given X
+	private Cache cc;	// the cache, extnds Thread, storing freq. querys 
+	private Readers[] r;	// the only Threads that can read from the DB
+
+	
+	//***** other local variables *****//
 	private ServerSocket _myServerSocket;
 	private Socket soc;
 	private int _port;
@@ -23,11 +31,18 @@ public class Server extends Thread{
 	DataInputStream _input_from_client;
 	DataOutputStream _send_to_client;
 
-	Semaphore _syncQustAns;
+	Semaphore _syncQustAns; // think again on this need
 
+	
+	//##	constructor		##//
+	
+	
+	
 	public Server(int _L, int _port, Semaphore m) {
 
 		this._L = _L;
+		
+		
 		this._port = _port;
 
 		_syncQustAns = m;
