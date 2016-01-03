@@ -3,7 +3,7 @@ package server;
 public class PoolManager {
 
 //	int numOfThreads;
-	S_thread[] t;
+	private S_thread[] t;
 	
 	public PoolManager(int s) {
 		// 
