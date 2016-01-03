@@ -8,19 +8,16 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.Semaphore;
 
-import sun.awt.Mutex;
-
-import com.sun.security.ntlm.Client;
-
 
 public class Server extends Thread{
 
 	//*****	server creating parameters ******//
 	private int _S, _C, _M, _L, _Y;
 	
-	private SThread[] search;	// extnds Thread, need to search the given X, size: S
-	private Cache cache;	// the cache, extnds Thread, storing freq. querys 
-	private Readers[] reader;	// the only Threads that can read from the DB
+	private PoolManager tpm;	//  need/guaranteed to search the given X, size: S
+	private Cache cahce;	// the cache, (extnds Thread???), storing freq. querys 
+	private ReadersManager readers;	// the only Threads that can read from the DB
+	private Writer writer;
 
 	
 	//***** other local variables *****//
@@ -41,17 +38,18 @@ public class Server extends Thread{
 	 */
 	public Server(int S, int C, int M, int L, int Y){
 		
-		_S = S;
-		search = new SThread[_S];
+//		_S = S;
+		tpm = new PoolManager(S);
 		
-		_C = C;
-		_M = M;
-		cache = new Cache(_C,_M);
+//		_C = C;
+//		_M = M;
+		cahce = new Cache(_C,_M);
 
 		_L = L; // the range to get random Y for each given X to search
 		
-		_Y = Y;
-		reader = new Readers[_Y];
+//		_Y = Y;
+		readers = new ReadersManager(_Y);
+		writer = new Writer();
 		
 	}
 	

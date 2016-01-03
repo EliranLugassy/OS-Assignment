@@ -23,6 +23,7 @@ public class QueryUnit {
 	
 	public int increase(){
 		this.z++;
+		return z;
 	}
 	
 }
