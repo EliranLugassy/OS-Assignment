@@ -5,14 +5,10 @@ import java.io.DataOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Random;
 import java.util.concurrent.Semaphore;
-
-import server.Server;
-import sun.awt.Mutex;
 
 /**
  * @author Evyatar Gerslte and Eliran Lugassy
@@ -34,7 +30,7 @@ public class Client extends Thread{
 	private DataInputStream _input_from_socket;
 	private DataOutputStream _send_to_socket;
 	private String host = "localhost";
-	private PrintStream ps;
+
 
 	Semaphore _syncQustAns;
 
@@ -44,9 +40,9 @@ public class Client extends Thread{
 	 * @param R - this number indicates the end of the range. [1,R] (include them)
 	 * @param fileName - this is the name of file who contains the Probabilities to number from the range
 	 */
-	public Client(int R, String fileName, int port, Semaphore s){
+	public Client(int R, String A, int port, Semaphore s){
 		_R = R;
-		_fileName = fileName;	
+		_fileName = A;	
 
 		_port = port;
 		_syncQustAns = s;
@@ -60,7 +56,6 @@ public class Client extends Thread{
 			_input_from_socket = new DataInputStream(_mySocket.getInputStream());
 			_send_to_socket = new DataOutputStream(_mySocket.getOutputStream());
 
-			//			ps = new PrintStream(_mySocket.getOutputStream()); //check if needed
 
 			while(true){
 
@@ -142,4 +137,23 @@ public class Client extends Thread{
 		}
 		return 0;
 	}
+	
+	
+	public static void main(String[] args) {
+		
+	int R = Integer.parseInt(args[0]);
+	
+	String A = args[1];
+	
+	Client c = new Client(R, A, 52334, new Semaphore(0));
+		
+	c.start();
+	
+		
+	}
+	
+	
+	
 }
+
+

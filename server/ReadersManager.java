@@ -4,6 +4,8 @@ public class ReadersManager {
 
 	private Reader[] reader;
 	
+	// DB db; -> ?
+	
 	public ReadersManager(int y){
 		reader = new Reader[y];
 	}

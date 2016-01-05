@@ -19,12 +19,12 @@ public class SearchCall implements Callable<Integer>{ //consider if will be bett
 	
 	public Integer call(){
 		
-		int y=-1;
+		Integer y=-1;
 		
 		//####	check how it works	####//
 		y = cache.getY(x);
 		
-		if(y != -1){// y is in cache
+		if(y != null){// y is in cache
 			System.out.println("x="+x+" query found in cache with y="+"y");
 			return y;
 		}

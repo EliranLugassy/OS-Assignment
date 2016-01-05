@@ -13,16 +13,16 @@ public class Server extends Thread{
 
 	//*****	server creating parameters ******//
 	private int _S, _C, _M, _L, _Y;
-	
+
 	private PoolManager tpm;	//  need/guaranteed to search the given X, size: S
 	private Cache cahce;	// the cache, (extnds Thread???), storing freq. querys 
 	private ReadersManager readers;	// the only Threads that can read from the DB
 	private Writer writer;
 
-	
+
 	//***** other local variables *****//
 	private ServerSocket _myServerSocket;
-	private Socket soc;
+	private Socket[] soc;
 	private int _port;
 
 	DataInputStream _input_from_client;
@@ -30,37 +30,37 @@ public class Server extends Thread{
 
 	Semaphore _syncQustAns; // think again on this need
 
-	
+
 	//##	constructors		##//
 	/**
 	 * the main and classic ctor - getting all necessary args
 	 * 
 	 */
 	public Server(int S, int C, int M, int L, int Y){
-		
-//		_S = S;
+
+		//		_S = S;
 		tpm = new PoolManager(S);
-		
-//		_C = C;
-//		_M = M;
-		cahce = new Cache(_C,_M);
+
+		//		_C = C;
+		//		_M = M;
+		cahce = new Cache(C,M);
 
 		_L = L; // the range to get random Y for each given X to search
-		
-//		_Y = Y;
-		readers = new ReadersManager(_Y);
+
+		//		_Y = Y;
+		readers = new ReadersManager(Y);
 		writer = new Writer();
-		
+
 	}
-	
-	
-	
+
+
+
 	//	ctor for tests only!	//
 	public Server(int _L, int _port, Semaphore m) {
 
 		this._L = _L;
-		
-		
+
+
 		this._port = _port;
 
 		_syncQustAns = m;
@@ -75,27 +75,31 @@ public class Server extends Thread{
 			_myServerSocket = new ServerSocket(_port); 
 
 			while(true){
-				soc = _myServerSocket.accept();
 				
-				_syncQustAns.acquire();
-				
-				_input_from_client = new DataInputStream(soc.getInputStream());
-				_send_to_client = new DataOutputStream(soc.getOutputStream());
+				for(int t=0; t<5; t++){
+					soc[t] = _myServerSocket.accept();
 
-				int x = _input_from_client.readInt();
-				System.out.println("Server got: "+x);
+					//_syncQustAns.acquire();
 
-				/*trying to send some response*/
-				_send_to_client.write(x+2);
-				_syncQustAns.release();
+					_input_from_client = new DataInputStream(soc[t].getInputStream());
+					_send_to_client = new DataOutputStream(soc[t].getOutputStream());
 
-				if(x==-1){
-					break;
+
+					int x = _input_from_client.readInt();
+					System.out.println("Server got: "+x);
+
+
+
+					//				_syncQustAns.release();
+
+					if(x==-1){
+						break;
+					}
 				}
 
+//			_myServerSocket.close();
 			}
-			soc.close();
-			_myServerSocket.close();
+			//			soc.close();
 
 
 
@@ -104,9 +108,9 @@ public class Server extends Thread{
 
 		} catch (IOException e) {
 			e.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//		} catch (InterruptedException e) {
+			//			// TODO Auto-generated catch block
+			//			e.printStackTrace();
 		}
 
 
