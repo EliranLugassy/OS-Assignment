@@ -25,5 +25,23 @@ public class QueryUnit {
 		this.z++;
 		return z;
 	}
+
+	//////////				GETERS			////////////////
+
+	public int getX() {
+		return x;
+	}
+
+
+	public int getY() {
+		return y;
+	}
+
+
+	public int getZ() {
+		return z;
+	}
+	
+	
 	
 }
