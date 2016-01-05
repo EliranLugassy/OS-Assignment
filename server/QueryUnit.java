@@ -4,12 +4,6 @@ public class QueryUnit {
 
 	private int x,y,z;
 
-	public QueryUnit(int x) {
-		this.x=x;
-		y=0;
-		z=0;
-	}
-
 	
 	public QueryUnit(int x, int y) {
 		this.x = x;
@@ -34,6 +28,7 @@ public class QueryUnit {
 
 
 	public int getY() {
+		increase();
 		return y;
 	}
 
