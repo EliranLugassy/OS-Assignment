@@ -1,38 +1,45 @@
 package server;
 
-import java.util.concurrent.Callable;
+import java.net.Socket;
 
-public class SearchCall implements Callable<Integer>{ //consider if will be better to use Callable!!!  
+public class SearchCall implements Runnable{ //consider if will be better to use Callable!!!  
 
+	Socket soc;
 	int x;
+	Integer y;
+	
 	CacheManager cache;
 	ReadersManager db;
 	
 	public SearchCall(CacheManager c, ReadersManager d){
 		cache = c;
 		db = d;
+		Socket soc = new Socket();
 	}
 	
-	public void setX(int x){
+	public void setSocketX(Socket s, int x){
+		soc = s;
 		this.x = x;
 	}
 	
-	public Integer call(){
+	public void run(){
 		
-		Integer y=-1;
+		y=-1;
 		
 		//####	check how it works	####//
 		y = cache.getY(x);
 		
 		if(y != null){// y is in cache
-			System.out.println("x="+x+" query found in cache with y="+"y");
-			return y;
+			System.out.println("x="+x+" query found in cache with y="+"y");//check what to write correctly by the assignment
+			
+			return y;//trough the socket
 		}
 		else{
 			y = db.getY(x);
 			
-			System.out.println("\n x="+x+" query found at the DB with y="+"y\n");
-			return y;
+			System.out.println("\n x="+x+" query found at the DB with y="+"y\n");//check what to write correctly by the assignment
+			
+			return y;//trough the socket
 		}
 						
 	}
