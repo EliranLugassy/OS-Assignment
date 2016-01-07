@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Random;
-import java.util.concurrent.Semaphore;
 
 /**
  * @author Evyatar Gerslte and Eliran Lugassy
@@ -32,7 +31,6 @@ public class Client extends Thread{
 	private String host = "localhost";
 
 
-	Semaphore _syncQustAns;
 
 
 	/**
@@ -40,12 +38,12 @@ public class Client extends Thread{
 	 * @param R - this number indicates the end of the range. [1,R] (include them)
 	 * @param fileName - this is the name of file who contains the Probabilities to number from the range
 	 */
-	public Client(int R, String A, int port, Semaphore s){
+	public Client(String name, int R, String A, int port){
+		super(name);
 		_R = R;
 		_fileName = A;	
 
 		_port = port;
-		_syncQustAns = s;
 	}
 
 	public void run(){
@@ -59,20 +57,18 @@ public class Client extends Thread{
 
 			while(true){
 
-				_syncQustAns.acquire();
+//				_syncQustAns.acquire();
 
 				int queryX = getRandomX(); //if x get 0 value -> the read from file failed
-				System.out.println("Client Sending "+queryX+".");
+				System.out.println("Client "+currentThread().getName()+" Sending "+queryX+".");
 
-				//				ps.println(queryX); //check if needed
 
 				_send_to_socket.writeInt(queryX);// and wait for responding of the server
 
-				_syncQustAns.release();
+//				_syncQustAns.release();
 
-
-				int y = _input_from_socket.read();
-				//				int y = _input_from_socket.readInt();
+				int y = _input_from_socket.readInt();
+				
 				System.out.println("Client "+currentThread().getName()+" : got "+y+" for query "+queryX);
 				//when get the response we need to print "Client : got reply y for query x"
 
@@ -81,9 +77,6 @@ public class Client extends Thread{
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -141,11 +134,14 @@ public class Client extends Thread{
 	
 	public static void main(String[] args) {
 		
-	int R = Integer.parseInt(args[0]);
+	String name = args[0];	
+		
+	int R = Integer.parseInt(args[1]);
 	
-	String A = args[1];
+	String A = args[2];
 	
-	Client c = new Client(R, A, 52334, new Semaphore(0));
+	
+	Client c = new Client(name,R, A, 52334);
 		
 	c.start();
 	

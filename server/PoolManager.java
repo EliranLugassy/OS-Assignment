@@ -12,12 +12,13 @@ public class PoolManager {
 	private S_Thread[] pool;
 	private SearchCall[] _workers;
 	
-	private BlockingQueue<Integer> _queue;
+	private BlockingQueue<SearchCall> _queue;
 	
 	//may not need
 	private Server _server;
 	
-	
+	public static final int MAX_NUM_OF_CLIENTS=5;
+	private int submitNumber = 0;
 	
 	/**
 	 * main constructor of poolManager
@@ -28,18 +29,18 @@ public class PoolManager {
 		
 //		numOfThreads = s;
 		this.pool = new S_Thread[S];
-		_workers = new SearchCall[S];
+		_workers = new SearchCall[MAX_NUM_OF_CLIENTS];
 		_server = server;
 
-		_queue = new ArrayBlockingQueue<Integer>(5);//check the efficient of the size per thread!
+		_queue = new ArrayBlockingQueue<SearchCall>(S);//check the efficient of the size per thread!
 		
-		//*****	maybe not need	*****
+		//initial it once per server only
 		for (int i = 0; i < _workers.length; i++) {
 			_workers[i]=new SearchCall(_server.getCache(), _server.getReaders());
-		}//*****	until here	******
+		}
 		
 		for (int i = 0; i < pool.length; i++) {
-			pool[i] = new S_Thread(i, _workers[i], _queue);
+			pool[i] = new S_Thread(_queue);
 		}
 		
 		for(S_Thread t:pool){
@@ -50,32 +51,39 @@ public class PoolManager {
 	
 	
 	
+	public void setTask(Socket socket) throws IOException {
+		
+		//getting the x from socket to convey it to the callable search thread
+		_workers[submitNumber].setSocket(socket);
+		try {
+			_queue.put(_workers[submitNumber]);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.err.println("cannot assign task to worker!");
+		}
+		finally{
+			submitNumber = (submitNumber+1)%MAX_NUM_OF_CLIENTS;
+		}
+		
+//		
+//		pool[t] = new S_Thread(t,_workers[t], _queue);
+//
+//		pool[t].start();
+//		
+		 
+	}
+
+	
+
+	
+	/*
 	public void setTask(int x){
 		_queue.add(x);
 	}
-	
-	
-	public void setTask(Socket socket, int t) {
-		
-		try {
-					
-			//getting the x from socket to convey it to the callable search thread
-			_workers[t].setSocketX(socket, new DataInputStream(socket.getInputStream()).readInt());
-		
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		
-		pool[t] = new S_Thread(t,_workers[t], _queue);
+	 */
 
-		pool[t].start();
-		
-		 
-	}
 	
 	
-
 
 }

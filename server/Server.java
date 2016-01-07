@@ -54,7 +54,7 @@ public class Server extends Thread{
 		
 		
 		/////       initial    sockets       ???
-		soc = new Socket[S];
+		soc = new Socket[5];
 
 	}
 
@@ -88,24 +88,24 @@ public class Server extends Thread{
 
 			while(true){
 				
-				for(int t=0; t<S; t++){
-					soc[t] = _myServerSocket.accept();
+				for(int t=0; ; t = (t+1)%_S){
+//					soc[t] = _myServerSocket.accept();
 
-					poolMan.setTask(soc[t],t);
+					poolMan.setTask(_myServerSocket.accept());
 					
 					
 					//_syncQustAns.acquire();
 
-					int x = _input_from_client.readInt();
-					System.out.println("Server got: "+x);
+//					int x = _input_from_client.readInt();
+//					System.out.println("Server got: "+x);
 
 
 
 					//				_syncQustAns.release();
 
-					if(x==-1){
-						break;
-					}
+//					if(x==-1){
+//						break;
+//					}
 				}
 
 //			_myServerSocket.close();
