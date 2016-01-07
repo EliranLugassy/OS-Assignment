@@ -14,8 +14,8 @@ public class Server extends Thread{
 	//*****	server creating parameters ******//
 	private int _S, _C, _M, _L, _Y;
 
-	private PoolManager tpm;	//  need/guaranteed to search the given X, size: S
-	private Cache cahce;	// the cache, (extnds Thread???), storing freq. querys 
+	private PoolManager poolMan;	//  need/guaranteed to search the given X, size: S
+	private CacheManager cahce;	// the cache, (extnds Thread???), storing freq. querys 
 	private ReadersManager readers;	// the only Threads that can read from the DB
 	private Writer writer;
 
@@ -31,30 +31,35 @@ public class Server extends Thread{
 	Semaphore _syncQustAns; // think again on this need
 
 
-	//##	constructors		##//
+	//////////##########			constructors			##########//////////
 	/**
 	 * the main and classic ctor - getting all necessary args
 	 * 
 	 */
 	public Server(int S, int C, int M, int L, int Y){
 
-		//		_S = S;
-		tpm = new PoolManager(S);
+				_S = S; /*number of allowed S-threads*/
+		poolMan = new PoolManager(S,this);
 
-		//		_C = C;
-		//		_M = M;
-		cahce = new Cache(C,M);
+		//		_C = C; /*size of the cache.*/
+		//		_M = M; /*least number of times a query has requested to be allowed to enter the cache*/
 
-		_L = L; // the range to get random Y for each given X to search
+		//		_L = L; // the range to get random Y for each given X to search
+
+		cahce = new CacheManager(C,M,L);
 
 		//		_Y = Y;
-		readers = new ReadersManager(Y);
+		readers = new ReadersManager(Y, L);	//		maybe made a DB object to manage all of Readers & Writers, they will inherit DB
 		writer = new Writer();
+		
+		
+		/////       initial    sockets       ???
+		soc = new Socket[S];
 
 	}
 
 
-
+/*
 	//	ctor for tests only!	//
 	public Server(int _L, int _port, Semaphore m) {
 
@@ -66,7 +71,14 @@ public class Server extends Thread{
 		_syncQustAns = m;
 
 	}
+*/
+	
+	//////////##########			run			##########//////////
 
+	/**
+	 * run method to implement the main operation
+	 * @Ovrride run from java class Thread
+	 */
 	public void run(){
 
 
@@ -76,14 +88,13 @@ public class Server extends Thread{
 
 			while(true){
 				
-				for(int t=0; t<5; t++){
+				for(int t=0; t<S; t++){
 					soc[t] = _myServerSocket.accept();
 
+					poolMan.setTask(soc[t],t);
+					
+					
 					//_syncQustAns.acquire();
-
-					_input_from_client = new DataInputStream(soc[t].getInputStream());
-					_send_to_client = new DataOutputStream(soc[t].getOutputStream());
-
 
 					int x = _input_from_client.readInt();
 					System.out.println("Server got: "+x);
@@ -116,7 +127,18 @@ public class Server extends Thread{
 
 	}
 
+	
+	//////////##########			functions for maintain			##########//////////
 
+	
+	
+	CacheManager getCache(){
+		return this.cahce;
+	}
+
+	ReadersManager getReaders(){
+		return this.readers;
+	}
 }
 
 

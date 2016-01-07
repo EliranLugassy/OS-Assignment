@@ -3,10 +3,10 @@ package server;
 public class ReadersManager {
 
 	private Reader[] reader;
-	
+	protected int L;
 	// DB db; -> ?
 	
-	public ReadersManager(int y){
+	public ReadersManager(int y, int L){
 		reader = new Reader[y];
 	}
 

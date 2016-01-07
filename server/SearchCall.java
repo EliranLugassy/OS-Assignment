@@ -5,15 +5,15 @@ import java.util.concurrent.Callable;
 public class SearchCall implements Callable<Integer>{ //consider if will be better to use Callable!!!  
 
 	int x;
-	Cache cache;
+	CacheManager cache;
 	ReadersManager db;
 	
-	public SearchCall(Cache c, ReadersManager d){
+	public SearchCall(CacheManager c, ReadersManager d){
 		cache = c;
 		db = d;
 	}
 	
-	public void conveyX(int x){
+	public void setX(int x){
 		this.x = x;
 	}
 	

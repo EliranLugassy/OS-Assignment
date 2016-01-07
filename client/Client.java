@@ -73,7 +73,7 @@ public class Client extends Thread{
 
 				int y = _input_from_socket.read();
 				//				int y = _input_from_socket.readInt();
-				System.out.println("Client : got "+y+" for query "+queryX);
+				System.out.println("Client "+currentThread().getName()+" : got "+y+" for query "+queryX);
 				//when get the response we need to print "Client : got reply y for query x"
 
 //				_mySocket.close();
