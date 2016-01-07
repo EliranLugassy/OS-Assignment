@@ -1,25 +1,25 @@
 package server;
 
-import java.io.DataInputStream;
-import java.io.IOException;
 import java.net.Socket;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 public class PoolManager {
 
-//	int numOfThreads;
+/////////////////////#####################		local variables		######################///////////////////////////
+
 	private S_Thread[] pool;
 	private SearchCall[] _workers;
 	
 	private BlockingQueue<SearchCall> _queue;
 	
-	//may not need
 	private Server _server;
 	
 	public static final int MAX_NUM_OF_CLIENTS=5;
 	private int submitNumber = 0;
 	
+	
+/////////////////////#####################		constructor		######################////////////////////////////
 	/**
 	 * main constructor of poolManager
 	 * @param S size of threadPool, number of S_Threads 
@@ -27,14 +27,15 @@ public class PoolManager {
 	 */
 	public PoolManager(int S, Server server) {
 		
-//		numOfThreads = s;
 		this.pool = new S_Thread[S];
+		
 		_workers = new SearchCall[MAX_NUM_OF_CLIENTS];
+		
 		_server = server;
 
-		_queue = new ArrayBlockingQueue<SearchCall>(S);//check the efficient of the size per thread!
+		_queue = new ArrayBlockingQueue<SearchCall>(MAX_NUM_OF_CLIENTS);
 		
-		//initial it once per server only
+		//initial them once per manager
 		for (int i = 0; i < _workers.length; i++) {
 			_workers[i]=new SearchCall(_server.getCache(), _server.getReaders());
 		}
@@ -50,15 +51,18 @@ public class PoolManager {
 	}
 	
 	
-	
-	public void setTask(Socket socket) throws IOException {
+/////////////////////#####################			functions			######################///////////////////////////	
+	/**
+	 * set a new task (number x) to execute when running
+	 * @param socket where to pull the x for the execute from
+	 */
+	public void setTask(Socket socket) {
 		
-		//getting the x from socket to convey it to the callable search thread
 		_workers[submitNumber].setSocket(socket);
 		try {
 			_queue.put(_workers[submitNumber]);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 			System.err.println("cannot assign task to worker!");
 		}
@@ -66,11 +70,6 @@ public class PoolManager {
 			submitNumber = (submitNumber+1)%MAX_NUM_OF_CLIENTS;
 		}
 		
-//		
-//		pool[t] = new S_Thread(t,_workers[t], _queue);
-//
-//		pool[t].start();
-//		
 		 
 	}
 
