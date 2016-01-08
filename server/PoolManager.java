@@ -3,21 +3,23 @@ package server;
 import java.net.Socket;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class PoolManager {
 
 /////////////////////#####################		local variables		######################///////////////////////////
 
 	private S_Thread[] pool;
-	private SearchCall[] _workers;
+	private SearchTask[] _workers;
 	
-	private BlockingQueue<SearchCall> _queue;
+	private BlockingQueue<SearchTask> _queue;
 	
 	private Server _server;
 	
 	public static final int MAX_NUM_OF_CLIENTS=5;
 	private int submitNumber = 0;
 	
+	ReentrantLock addLock;
 	
 /////////////////////#####################		constructor		######################////////////////////////////
 	/**
@@ -29,15 +31,17 @@ public class PoolManager {
 		
 		this.pool = new S_Thread[S];
 		
-		_workers = new SearchCall[MAX_NUM_OF_CLIENTS];
+		_workers = new SearchTask[MAX_NUM_OF_CLIENTS];
 		
 		_server = server;
 
-		_queue = new ArrayBlockingQueue<SearchCall>(MAX_NUM_OF_CLIENTS);
+		_queue = new ArrayBlockingQueue<SearchTask>(MAX_NUM_OF_CLIENTS);
+		
+		addLock = new ReentrantLock();
 		
 		//initial them once per manager
 		for (int i = 0; i < _workers.length; i++) {
-			_workers[i]=new SearchCall(_server.getCache(), _server.getReaders());
+			_workers[i]=new SearchTask(_server.getCache(), _server.getReaders());
 		}
 		
 		for (int i = 0; i < pool.length; i++) {
@@ -58,6 +62,8 @@ public class PoolManager {
 	 */
 	public void setTask(Socket socket) {
 		
+		addLock.lock();
+		
 		_workers[submitNumber].setSocket(socket);
 		try {
 			_queue.put(_workers[submitNumber]);
@@ -68,6 +74,7 @@ public class PoolManager {
 		}
 		finally{
 			submitNumber = (submitNumber+1)%MAX_NUM_OF_CLIENTS;
+			addLock.unlock();
 		}
 		
 		 

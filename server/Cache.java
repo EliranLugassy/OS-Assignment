@@ -15,7 +15,6 @@ public class Cache extends Thread{
 	private int maxMapSize, threshHold, minZ, _rangeForY;
 	public final int MAX_NUM_OF_CLIENTS = 5;
 
-	//	private Thread[] pool;///   ??? or the next line??
 
 	QueryUnit[] updateList;
 
@@ -24,7 +23,7 @@ public class Cache extends Thread{
 	private HashMap<Integer, QueryUnit> map;
 	ReentrantLock rlock;
 
-//	public int[] cacheXs, cacheYs;
+	Update cacheUpdater;
 
 	/////////////////////#####################		constructor		######################///////////////////////////
 
@@ -41,6 +40,8 @@ public class Cache extends Thread{
 
 		map = new HashMap<Integer, QueryUnit>(C);
 		rlock= new ReentrantLock();
+		
+		cacheUpdater = new Update();
 
 	}
 
@@ -109,13 +110,17 @@ public class Cache extends Thread{
 	        if(q.getZ()<map.get(minZ).getZ()){
 	        	minZ = q.getX();
 	        }
-	        it.remove(); // avoids a ConcurrentModificationException
+	        it.remove();
 	    }
 		return map.get(minZ).getX();
 	}
 
 	
-	
+	public void update(){
+		
+		cacheUpdater.start();
+		
+	}
 	
 	
 	

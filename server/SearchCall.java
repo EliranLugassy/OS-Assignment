@@ -5,7 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
-public class SearchCall implements Runnable{ 
+public class SearchTask implements Runnable{ 
 
 /////////////////////#####################		local variables		######################///////////////////////////	
 	Socket soc;
@@ -25,7 +25,7 @@ public class SearchCall implements Runnable{
 	 * @param c the cache
 	 * @param d the DB
 	 */
-	public SearchCall(Cache c, ReadersManager d){
+	public SearchTask(Cache c, ReadersManager d){
 		cache = c;
 		db = d;
 	}
