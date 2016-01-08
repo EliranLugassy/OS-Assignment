@@ -20,6 +20,12 @@ public class QueryUnit {
 		return z;
 	}
 
+	
+	public void addZfrom(QueryUnit other) {
+
+		this.z = this.z + other.z;
+
+	}
 	//////////				GETERS			////////////////
 
 	public int getX() {
