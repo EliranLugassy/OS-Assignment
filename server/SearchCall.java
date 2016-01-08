@@ -12,7 +12,7 @@ public class SearchCall implements Runnable{
 	int x;
 	Integer y;
 
-	CacheManager cache;
+	Cache cache;
 	ReadersManager db;
 
 	DataInputStream _getXFromClient;
@@ -25,7 +25,7 @@ public class SearchCall implements Runnable{
 	 * @param c the cache
 	 * @param d the DB
 	 */
-	public SearchCall(CacheManager c, ReadersManager d){
+	public SearchCall(Cache c, ReadersManager d){
 		cache = c;
 		db = d;
 	}

@@ -10,7 +10,7 @@ public class Server extends Thread{
 	//////////**********			server creating parameters 		***********//////////
 
 	private PoolManager poolManage;	//  need/guaranteed to search the given X, size: S
-	private CacheManager cahce;	// the cache, (extends Thread???), storing freq. query's 
+	private Cache cache;	// the cache, (extends Thread???), storing freq. query's 
 	private ReadersManager readers;	// the only Threads that can read from the DB
 	
 	
@@ -31,8 +31,9 @@ public class Server extends Thread{
 		//		_C = size of the cache.*/
 		//		_M = least number of times a query has requested to be allowed to enter the cache*/
 		//		_L = the range to get random Y for each given X to search*/
-		cahce = new CacheManager(C,M,L);
-
+		cache = new Cache(C,M,L);
+//		cache.start();
+		
 		//		_Y = number of reader threads*/
 		readers = new ReadersManager(Y, L);	//	TODO maybe made a DB object to manage all of Readers & Writers, they will inherit DB
 
@@ -91,8 +92,8 @@ public class Server extends Thread{
 
 
 
-	CacheManager getCache(){
-		return this.cahce;
+	Cache getCache(){
+		return this.cache;
 	}
 
 	ReadersManager getReaders(){

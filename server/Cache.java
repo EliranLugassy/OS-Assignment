@@ -1,94 +1,103 @@
 package server;
 
 import java.util.HashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Cache extends Thread{
 
-	private int size, threshHold, minimal_Value_In_Chache;
-	
-	private Thread[] pool;	///////////// 		needed?????????????		/////////////
+	/////////////////////#####################		local variables		######################///////////////////////////
+
+	private int size, threshHold, minZ, _rangeForY;
+	public final int MAX_NUM_OF_CLIENTS = 5;
+
+	//	private Thread[] pool;///   ??? or the next line??
+
+	int[] updateList;
+
+	public ExecutorService pool;
+
 	private HashMap<Integer, QueryUnit> map;
 	ReentrantLock rlock;
-	
-	Updater updtr;
-	int[] updateList;
-	
-	int minZ;
-	
-	public Cache(int C, int M) {
-		
+
+//	public int[] cacheXs, cacheYs;
+
+	/////////////////////#####################		constructor		######################///////////////////////////
+
+	public Cache(int C, int M, int L) {
+
 		size = C;
 		threshHold = M;
-		minimal_Value_In_Chache=0;
+		_rangeForY = L;
+		minZ=0;
 		
-		pool = new Thread[5];
+		updateList = new int[10];
+
+		pool = Executors.newFixedThreadPool(MAX_NUM_OF_CLIENTS);
+
 		map = new HashMap<Integer, QueryUnit>(C);
 		rlock= new ReentrantLock();
-		
-		updtr = new Updater();
-		updateList = new int[C];
+
 	}
 
-	
+
+
+	/////////////////////#####################		functions		######################///////////////////////////
+
+	public void run(){
+
+	}
+
+
+	@SuppressWarnings("finally")
 	public int getY(int x) {
 
 		int y=-1;
 		
-		rlock.lock();
-		//***check if it would be better to search few together one by one***
-		QueryUnit qy = map.get(x);
-		if(qy!=null){
-			y = qy.getY();
+		try {
+			
+			Future<Integer> result = pool.submit(new CacheCaller(x, map, rlock));
+			
+				y = result.get();
+				
+		} catch (ExecutionException e) {
+				e.printStackTrace();
+			}
+			
+		 catch (InterruptedException e) {
+			e.printStackTrace();
 		}
-		rlock.unlock();
-		
-		return y;
-
+		finally{
+			return y;
+		}
 	}
 
 
+
 	public void add(QueryUnit q){
-		
+
 		rlock.lock();
-		
+
 		if(map.size()==size){
 			map.remove(q.getX());//return null iff x isn't in map already
 		}
 		map.put(q.getX(),q);
-		
+
 		int z = q.getZ();
 		if(z < minZ){
 			minZ = z;
 		}
-		
+
 		rlock.unlock();
-		
+
 	}
 
 	int getMinZ(){
 		return minZ;
 	}
-	
-	// edit require
-	public void update(){
-		
-		updtr.setList(updateList);
-		
-	}
 
-	/////////////////////////			INNER CLASS UPDATER			///////////////////
-	
-	class Updater extends Thread{
-		
-		public Updater(){
-			
-		}
-		//ליצור תהליכון שרץ בלולאה אינסופית וישן זמן מסוים וכל פעם שהזמן נגמר הוא נועל את הקאש ואת המסד נתונים ומבצע עדכון של הקאש
-	
-		
-		public void setList(int[] q){
-			
-		}
-	}
+
 }
