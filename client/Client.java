@@ -134,14 +134,14 @@ public class Client extends Thread{
 	
 	public static void main(String[] args) {
 		
-	String name = args[0];	
-		
-	int R = Integer.parseInt(args[1]);
+//	String name = args[0];	
+//		
+//	int R = Integer.parseInt(args[1]);
+//	
+//	String A = args[2];
 	
-	String A = args[2];
 	
-	
-	Client c = new Client(name,R, A, 52334);
+	Client c = new Client("", 5,"prob.txt" , 52334);
 		
 	c.start();
 	

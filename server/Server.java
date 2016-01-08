@@ -35,7 +35,7 @@ public class Server extends Thread{
 //		cache.start();
 		
 		//		_Y = number of reader threads*/
-		readers = new ReadersManager(Y, L);	//	TODO maybe made a DB object to manage all of Readers & Writers, they will inherit DB
+		readers = new ReadersManager(Y, L, M);	//	TODO maybe made a DB object to manage all of Readers & Writers, they will inherit DB
 
 	}
 
@@ -98,6 +98,14 @@ public class Server extends Thread{
 
 	ReadersManager getReaders(){
 		return this.readers;
+	}
+	
+	
+	public static void main(String[] args) {
+		
+		Server s = new Server(5, 5, 5, 5, 5);
+		
+		s.start();
 	}
 }
 
