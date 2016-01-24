@@ -23,8 +23,9 @@ public class Server extends Thread{
 	 * the main and classic constructor - getting all necessary arguments
 	 * 
 	 */
-	public Server(int S, int C, int M, int L, int Y){
+	public Server(int S, int C, int M, int L, int Y, int port){
 
+		_port = port;
 		//		_S = number of allowed S-threads*/
 		poolManage = new PoolManager(S,this);
 
@@ -103,7 +104,7 @@ public class Server extends Thread{
 	
 	public static void main(String[] args) {
 		
-		Server s = new Server(5, 5, 5, 5, 5);
+		Server s = new Server(5, 5, 5, 5, 5,52334);
 		
 		s.start();
 	}

@@ -5,9 +5,11 @@ import java.io.DataOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Random;
+import java.util.concurrent.Semaphore;
 
 /**
  * @author Evyatar Gerslte and Eliran Lugassy
@@ -29,8 +31,9 @@ public class Client extends Thread{
 	private DataInputStream _input_from_socket;
 	private DataOutputStream _send_to_socket;
 	private String host = "localhost";
+	private PrintStream ps;
 
-
+	Semaphore _syncQustAns;
 
 
 	/**
@@ -38,12 +41,12 @@ public class Client extends Thread{
 	 * @param R - this number indicates the end of the range. [1,R] (include them)
 	 * @param fileName - this is the name of file who contains the Probabilities to number from the range
 	 */
-	public Client(String name, int R, String A, int port){
-		super(name);
+	public Client(int R, String fileName, int port){
 		_R = R;
-		_fileName = A;	
+		_fileName = fileName;	
 
 		_port = port;
+//		_syncQustAns = s;
 	}
 
 	public void run(){
@@ -54,22 +57,25 @@ public class Client extends Thread{
 			_input_from_socket = new DataInputStream(_mySocket.getInputStream());
 			_send_to_socket = new DataOutputStream(_mySocket.getOutputStream());
 
+			//			ps = new PrintStream(_mySocket.getOutputStream()); //check if needed
 
 			while(true){
 
 //				_syncQustAns.acquire();
 
 				int queryX = getRandomX(); //if x get 0 value -> the read from file failed
-				System.out.println("Client "+currentThread().getName()+" Sending "+queryX+".");
+				System.out.println("Client Sending "+queryX+".");
 
+				//				ps.println(queryX); //check if needed
 
 				_send_to_socket.writeInt(queryX);// and wait for responding of the server
 
 //				_syncQustAns.release();
 
-				int y = _input_from_socket.readInt();
-				
-				System.out.println("Client "+currentThread().getName()+" : got "+y+" for query "+queryX);
+
+				int y = _input_from_socket.read();
+				//				int y = _input_from_socket.readInt();
+				System.out.println("Client : got "+y+" for query "+queryX);
 				//when get the response we need to print "Client : got reply y for query x"
 
 //				_mySocket.close();
@@ -130,26 +136,4 @@ public class Client extends Thread{
 		}
 		return 0;
 	}
-	
-	
-	public static void main(String[] args) {
-		
-//	String name = args[0];	
-//		
-//	int R = Integer.parseInt(args[1]);
-//	
-//	String A = args[2];
-	
-	
-	Client c = new Client("", 5,"prob.txt" , 52334);
-		
-	c.start();
-	
-		
-	}
-	
-	
-	
 }
-
-
